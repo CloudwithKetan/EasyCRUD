@@ -1,79 +1,334 @@
-# MariaDB Setup and Configuration Guide for Windows
+# EasyCRUD
+---
 
-This guide explains how to set up MariaDB, create a database, and Create Database User
+## Features
 
-## 1. Installing MariaDB
+### Student Management
 
-Installing MariaDB on Ubntu
+* Create student records
+* Retrieve student details
+* Update student information
+* Delete student records
 
-```shell
-apt update && apt install mariadb-server -y
+### Backend Services
+
+* RESTful API architecture
+* Spring Boot framework
+* Spring Data JPA integration
+* Environment-based configuration
+* Database-driven persistence
+
+### DevOps
+
+* Docker containerization
+* Jenkins CI/CD pipeline
+* Automated build and deployment
+* Maven-based build management
+
+---
+
+## Technology Stack
+
+| Component        | Technology                  |
+| ---------------- | --------------------------- |
+| Backend          | Spring Boot                 |
+| Language         | Java                        |
+| Build Tool       | Maven                       |
+| Database         | MariaDB                     |
+| ORM              | Spring Data JPA / Hibernate |
+| Containerization | Docker                      |
+| CI/CD            | Jenkins                     |
+| Version Control  | Git                         |
+| Repository       | GitHub                      |
+
+---
+
+## Architecture
+
+```text
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+Jenkins Pipeline
+    │
+    ├── Checkout Source
+    ├── Build Application
+    ├── Execute Tests
+    ├── Build Docker Image
+    └── Deploy Application
+    │
+    ▼
+Docker Container
+    │
+    ▼
+Spring Boot Application
+    │
+    ▼
+MariaDB Database
 ```
 
-## 2. Securing MariaDB
+---
 
-Open the Command Prompt as Administrator and run the following command to secure your installation:
+## Project Structure
 
-```shell
+```text
+EasyCRUD/
+│
+├── src/
+│   ├── main/
+│   └── test/
+│
+├── Dockerfile
+├── Jenkinsfile
+├── pom.xml
+├── README.md
+│
+└── target/
+```
 
+---
+
+## Prerequisites
+
+Ensure the following software is installed:
+
+* Java 17 or higher
+* Maven 3.8+
+* MariaDB 10+
+* Docker
+* Jenkins
+* Git
+
+---
+
+## Database Setup
+
+### Install MariaDB
+
+```bash
+sudo apt update
+sudo apt install mariadb-server -y
+```
+
+### Secure Installation
+
+```bash
 mysql_secure_installation
 ```
 
-Follow the prompts to:
-Set a root password.
-Remove insecure default users and test databases.
-Disable remote root login.
-
-## 3. Setting Up the Database
-
-Open terminal and login to MariaDB:
+### Login to MariaDB
 
 ```bash
-
 mysql -u root -p
 ```
 
-Enter the root password when prompted.
-
-Create a new database and user:
+### Create Database
 
 ```sql
 CREATE DATABASE student_db;
-GRANT ALL PRIVILEGES ON springbackend.* TO 'username'@'localhost' IDENTIFIED BY 'your_password';
 ```
-Replace username and your_password with your desired username and password.
 
-Exit MariaDB:
+### Create Database User
 
 ```sql
+GRANT ALL PRIVILEGES ON student_db.* TO 'username'@'localhost' IDENTIFIED BY 'password';
 
-EXIT;
+FLUSH PRIVILEGES;
 ```
 
-## 4. You will need Database Credentials to Connect Backend with Database
-1. DB_HOST
-2. DB_USER
-3. DB_PASS
-4. DB_PORT
+### Create Students Table
 
-5. DB_NAME
-
-```sh
+```sql
 USE student_db;
-```
-```sh
-CREATE TABLE `students` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `course` varchar(255) DEFAULT NULL,
-  `student_class` varchar(255) DEFAULT NULL,
-  `percentage` double DEFAULT NULL,
-  `branch` varchar(255) DEFAULT NULL,
-  `mobile_number` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+CREATE TABLE students (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    course VARCHAR(255),
+    student_class VARCHAR(255),
+    percentage DOUBLE,
+    branch VARCHAR(255),
+    mobile_number VARCHAR(255),
+    PRIMARY KEY (id)
+);
 ```
 
+---
 
+## Configuration
+
+Configure the following environment variables:
+
+```properties
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=student_db
+DB_USER=username
+DB_PASS=password
+```
+
+---
+
+## Build Instructions
+
+Clone the repository:
+
+```bash
+git clone https://github.com/CloudwithKetan/EasyCRUD.git
+cd EasyCRUD
+```
+
+Build the project:
+
+```bash
+mvn clean install
+```
+
+Package the application:
+
+```bash
+mvn clean package
+```
+
+---
+
+## Deployment Guide
+
+### Local Deployment
+
+Run the application:
+
+```bash
+mvn spring-boot:run
+```
+
+or
+
+```bash
+java -jar target/*.jar
+```
+
+Verify application availability:
+
+```text
+http://localhost:8080
+```
+
+---
+
+### Docker Deployment
+
+Build Docker image:
+
+```bash
+docker build -t easycrud .
+```
+
+Run container:
+
+```bash
+docker run -d \
+-p 8080:8080 \
+-e DB_HOST=localhost \
+-e DB_PORT=3306 \
+-e DB_NAME=student_db \
+-e DB_USER=username \
+-e DB_PASS=password \
+easycrud
+```
+
+Verify deployment:
+
+```bash
+docker ps
+```
+
+---
+
+## CI/CD Pipeline
+
+The project includes a Jenkins pipeline for automated software delivery.
+
+### Pipeline Stages
+
+1. Source Code Checkout
+2. Dependency Resolution
+3. Application Build
+4. Automated Testing
+5. Docker Image Build
+6. Deployment
+
+### Pipeline Flow
+
+```text
+GitHub
+   │
+   ▼
+Jenkins
+   │
+   ├── Checkout
+   ├── Build
+   ├── Test
+   ├── Docker Build
+   └── Deploy
+   │
+   ▼
+Application Environment
+```
+
+---
+
+## API Endpoints
+
+| Method | Endpoint       | Description       |
+| ------ | -------------- | ----------------- |
+| POST   | /students      | Create Student    |
+| GET    | /students      | Get All Students  |
+| GET    | /students/{id} | Get Student By ID |
+| PUT    | /students/{id} | Update Student    |
+| DELETE | /students/{id} | Delete Student    |
+
+---
+
+## Post Deployment Validation
+
+Verify the following after deployment:
+
+* Application is running successfully
+* Database connection is established
+* CRUD APIs are accessible
+* Docker container is healthy
+* Jenkins pipeline completed successfully
+
+Example:
+
+```bash
+curl http://localhost:8080/students
+```
+
+---
+
+## Security Considerations
+
+* Store credentials using environment variables.
+* Use Jenkins Credentials Manager for sensitive data.
+* Restrict database access to authorized hosts.
+* Enable HTTPS in production environments.
+* Avoid hardcoding secrets in source code.
+
+---
+
+## Future Enhancements
+
+* JWT Authentication & Authorization
+* Swagger/OpenAPI Documentation
+* Role-Based Access Control (RBAC)
+* Kubernetes Deployment
+* Monitoring with Prometheus & Grafana
+* Centralized Logging
+* Automated Integration Testing
 
